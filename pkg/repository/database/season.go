@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -122,5 +121,46 @@ func (e *Season) BatchGet(ctx context.Context, ids []string) (entity.Seasons, er
 	ctx, span := tracer.Start(ctx, "database.Season#BatchGet")
 	defer span.End()
 
-	return nil, errcode.New(errors.New("not implemtented yet"))
+	fields := []string{
+		"seasonID",
+		"seriesID",
+		"displayName",
+		"imageURL",
+		"displayOrder",
+	}
+
+	query := fmt.Sprintf(
+		"SELECT %s FROM seasons WHERE SeasonID IN (?%s) ORDER BY displayOrder",
+		strings.Join(fields, ", "),
+		strings.Repeat(",?", len(ids)-1),
+	)
+
+	rows, err := e.db.QueryContext(ctx, query, convertStringsToAnys(ids)...)
+	if err != nil {
+		return nil, errcode.New(err)
+	}
+
+	var seasons entity.Seasons
+	for rows.Next() {
+		season := &entity.Season{}
+		err = rows.Scan(
+			&season.ID,
+			&season.SeriesID,
+			&season.DisplayName,
+			&season.ImageURL,
+			&season.DisplayOrder,
+		)
+		if err != nil {
+			continue
+		}
+		seasons = append(seasons, season)
+	}
+
+	if closeErr := rows.Close(); closeErr != nil {
+		return nil, errcode.New(closeErr)
+	}
+	if err != nil {
+		return nil, errcode.New(err)
+	}
+	return seasons, nil
 }

@@ -35,25 +35,25 @@ func (u *UsecaseImpl) ListEpisodes(ctx context.Context, req *ListEpisodesRequest
 		return nil, errcode.New(err)
 	}
 
-	series := make(entity.SeriesMulti, 0, len(episodes))
+	srids := make([]string, 0, len(episodes))
 	for i := range episodes {
-		l, err := u.db.Series.Get(ctx, episodes[i].SeriesID)
-		if err != nil {
-			continue
-		}
-		series = append(series, l)
+		srids = append(srids, episodes[i].SeriesID)
+	}
+	series, err := u.db.Series.BatchGet(ctx, srids)
+	if err != nil {
+		return nil, errcode.New(err)
 	}
 
-	seasons := make(entity.Seasons, 0, len(episodes))
+	seids := make([]string, 0, len(episodes))
 	for i := range episodes {
 		if episodes[i].SeasonID == nil {
 			continue
 		}
-		l, err := u.db.Season.Get(ctx, *episodes[i].SeasonID)
-		if err != nil {
-			continue
-		}
-		seasons = append(seasons, l)
+		seids = append(seids, *episodes[i].SeasonID)
+	}
+	seasons, err := u.db.Season.BatchGet(ctx, seids)
+	if err != nil {
+		return nil, errcode.New(err)
 	}
 
 	return &ListEpisodesResponse{
