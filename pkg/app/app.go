@@ -61,6 +61,7 @@ func (a *App) runWithContext(ctx context.Context) (err error) {
 		return err
 	}
 
+	a.logger.Info("starting tracing config...", zap.Bool("enabled", cfg.TraceConfig.EnableTracing))
 	if cfg.TraceConfig.EnableTracing {
 		cleanupTP, err := config.ConfigureTraceProvider(a.logger)
 		if err != nil {
@@ -69,10 +70,13 @@ func (a *App) runWithContext(ctx context.Context) (err error) {
 		defer cleanupTP()
 	}
 
+	a.logger.Info("starting mysql connecting...", zap.Any("config", cfg.DBConfig))
 	mysql, err := db.NewMySQL(cfg.DBConfig)
 	if err != nil {
 		return err
 	}
+
+	a.logger.Info("starting redis connecting...", zap.String("endpoint", cfg.RedisEndpoint))
 
 	// NOTE: redisクライアントのサンプル実装
 	redis, err := db.NewRedisClient(cfg.RedisEndpoint)
