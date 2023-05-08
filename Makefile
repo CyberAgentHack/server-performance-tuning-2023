@@ -19,3 +19,10 @@ generate:
 .PHONY: setup
 setup:
 	sh scripts/setup.sh
+
+## CICD用
+ZIP_FILE_NAME=wsperf-application.zip
+
+.PHONY: zip
+zip:
+	zip -r $(ZIP_FILE_NAME) . -x .git/\*
