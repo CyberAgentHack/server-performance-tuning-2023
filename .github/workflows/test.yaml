@@ -6,6 +6,8 @@ on: [push]
 env:
   AWS_REGION: ap-northeast-1
   ZIP_FILE_NAME: wsperf-application.zip
+  ECR_REPOSITORY: caws202305perf
+  IMAGE_TAG: default
 
 jobs:
   build:
@@ -40,3 +42,13 @@ jobs:
         run: |
           zip -r ${{ env.ZIP_FILE_NAME }} . -x .git/\*
           aws s3 cp ${{ env.ZIP_FILE_NAME }} s3://${{ secrets.S3_BUCKET_NAME }}/${{ env.ZIP_FILE_NAME }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
