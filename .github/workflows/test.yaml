@@ -38,5 +38,5 @@ jobs:
 
       - name: Zip repository and upload to S3
         run: |
-          make zip ZIP_FILE_NAME=${{ env.ZIP_FILE_NAME }}
+          zip -r ${{ env.ZIP_FILE_NAME }} . -x .git/\*
           aws s3 cp ${{ env.ZIP_FILE_NAME }} s3://${{ secrets.S3_BUCKET_NAME }}/${{ env.ZIP_FILE_NAME }}
