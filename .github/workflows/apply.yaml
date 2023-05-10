@@ -1,0 +1,56 @@
+name: Deploy to S3 and ECR
+
+on:
+  push:
+    branches: ['main']
+
+
+env:
+  AWS_REGION: ap-northeast-1
+  ZIP_FILE_NAME: wsperf-application.zip
+  ECR_REPOSITORY: caws202305perf
+  IMAGE_TAG: default
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+
+      - name: Test
+        run: make test
+
+  deploy:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/actions-application
+
+      - name: Zip repository and upload to S3
+        run: |
+          zip -r ${{ env.ZIP_FILE_NAME }} . -x .git/\*
+          aws s3 cp ${{ env.ZIP_FILE_NAME }} s3://${{ secrets.S3_BUCKET_NAME }}/${{ env.ZIP_FILE_NAME }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
