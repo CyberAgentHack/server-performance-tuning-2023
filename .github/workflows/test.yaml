@@ -1,6 +1,8 @@
 name: Go Test
 
-on: [push]
+on: 
+  push:
+  workflow_dispatch:
 
 env:
   AWS_REGION: ap-northeast-1
