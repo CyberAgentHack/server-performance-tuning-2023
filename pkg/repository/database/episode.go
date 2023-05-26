@@ -9,6 +9,7 @@ import (
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/entity"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/repository"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type Episode struct {
@@ -22,8 +23,8 @@ func NewEpisode(db *sql.DB) *Episode {
 }
 
 func (e *Episode) List(ctx context.Context, params *repository.ListEpisodesParams) (entity.Episodes, error) {
-	ctx, span := tracer.Start(ctx, "database.Episode#List")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "database.Episode#List")
+	defer seg.Close(nil)
 
 	fields := []string{
 		"episodeID",

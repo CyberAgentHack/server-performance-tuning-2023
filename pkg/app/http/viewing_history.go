@@ -17,15 +17,11 @@ func (s *Service) routeViewingHistory(r chi.Router) {
 
 func (s *Service) createViewingHistory(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	ctx, span := startTrace(ctx, r, "http.Service#createViewinghistory")
-	defer span.End()
-
 	body := &entity.ViewingHistory{}
 	if err := json.NewDecoder(r.Body).Decode(body); err != nil {
 		s.BadRequest(err, w, r)
 		return
 	}
-
 	req := &usecase.CreateViewingHistoryRequest{ViewingHistory: body}
 	resp, err := s.usecase.CreateViewingHistory(ctx, req)
 	if err != nil {
@@ -37,9 +33,6 @@ func (s *Service) createViewingHistory(w http.ResponseWriter, r *http.Request) {
 
 func (s *Service) listViewingHistories(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	ctx, span := startTrace(ctx, r, "http.Service#createViewinghistory")
-	defer span.End()
-
 	episodeIDs := QueryStrings(r, "episodeIds")
 	if len(episodeIDs) == 0 {
 		s.OK(nil, w, r)

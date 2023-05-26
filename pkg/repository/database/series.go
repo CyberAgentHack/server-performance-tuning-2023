@@ -10,6 +10,7 @@ import (
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/entity"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/repository"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type Series struct {
@@ -21,8 +22,8 @@ func NewSeries(db *sql.DB) *Series {
 }
 
 func (e *Series) List(ctx context.Context, params *repository.ListSeriesParams) (entity.SeriesMulti, error) {
-	ctx, span := tracer.Start(ctx, "database.Series#List")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "database.Series#List")
+	defer seg.Close(nil)
 
 	fields := []string{"seriesID", "displayName", "description", "imageURL", "genreID"}
 
@@ -77,8 +78,8 @@ func (e *Series) List(ctx context.Context, params *repository.ListSeriesParams) 
 }
 
 func (e *Series) Get(ctx context.Context, id string) (*entity.Series, error) {
-	ctx, span := tracer.Start(ctx, "database.Series#Get")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "database.Series#Get")
+	defer seg.Close(nil)
 
 	query := "SELECT seriesID, displayName, description, imageURL, genreID FROM series WHERE seriesID = ?"
 	row := e.db.QueryRowContext(ctx, query, id)
@@ -98,8 +99,8 @@ func (e *Series) Get(ctx context.Context, id string) (*entity.Series, error) {
 }
 
 func (e *Series) BatchGet(ctx context.Context, ids []string) (entity.SeriesMulti, error) {
-	ctx, span := tracer.Start(ctx, "database.Series#BatchGet")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "database.Series#BatchGet")
+	defer seg.Close(nil)
 
 	return nil, errcode.New(errors.New("not implemtented yet"))
 }

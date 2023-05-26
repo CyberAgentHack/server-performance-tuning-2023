@@ -1,14 +1,11 @@
 package http
 
 import (
-	"context"
 	"net/http"
 	"time"
 
+	"github.com/aws/aws-xray-sdk-go/xray"
 	"github.com/go-chi/chi"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace"
-	"go.opentelemetry.io/otel/semconv/v1.12.0"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/usecase"
@@ -35,20 +32,13 @@ func (s *Service) Register(mux *chi.Mux) {
 
 func (s *Service) newRouter() chi.Router {
 	r := chi.NewRouter()
+	r.Use(func(h http.Handler) http.Handler {
+		return xray.Handler(xray.NewFixedSegmentNamer("wsperf"), h)
+	})
 	r.Get("/", livenessCheck)
 	r.Route("/series", s.routeSeries)
 	r.Route("/seasons", s.routeSeason)
 	r.Route("/episodes", s.routeEpisode)
 	r.Route("/viewingHistories", s.routeViewingHistory)
 	return r
-}
-
-func startTrace(ctx context.Context, r *http.Request, spanName string) (context.Context, trace.Span) {
-	attrs, _, _ := otelhttptrace.Extract(ctx, r)
-	attrs = append(attrs,
-		semconv.HTTPURLKey.String(r.Host+r.URL.String()),
-		semconv.HTTPMethodKey.String(r.Method),
-	)
-	ctx, span := tracer.Start(ctx, spanName, trace.WithAttributes(attrs...))
-	return ctx, span
 }

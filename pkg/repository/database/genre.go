@@ -7,6 +7,7 @@ import (
 
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/entity"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type Genre struct {
@@ -21,8 +22,8 @@ func (c *Genre) BatchGet(ctx context.Context, ids []string) (entity.Genres, erro
 	if len(ids) == 0 {
 		return nil, nil
 	}
-	ctx, span := tracer.Start(ctx, "database.Cast#BatchGet")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "database.Cast#BatchGet")
+	defer seg.Close(nil)
 	rows, err := c.db.QueryContext(ctx, `SELECT genreID, displayName FROM genres WHERE genreID IN (?`+strings.Repeat(",?", len(ids)-1)+`)`, convertStringsToAnys(ids)...)
 	if err != nil {
 		return nil, errcode.New(err)

@@ -15,9 +15,6 @@ func (s *Service) routeSeason(r chi.Router) {
 
 func (s *Service) listSeasons(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	ctx, span := startTrace(ctx, r, "http.Service#listSeasons")
-	defer span.End()
-
 	req := &usecase.ListSeasonsRequest{
 		Limit:    QueryIntDefault(r, "limit", 20),
 		Offset:   QueryInt(r, "offset"),

@@ -15,9 +15,6 @@ func (s *Service) routeEpisode(r chi.Router) {
 
 func (s *Service) listEpisodes(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	ctx, span := startTrace(ctx, r, "http.Service#listEpisodes")
-	defer span.End()
-
 	req := &usecase.ListEpisodesRequest{
 		Limit:    QueryIntDefault(r, "limit", 20),
 		Offset:   QueryInt(r, "offset"),
@@ -29,6 +26,5 @@ func (s *Service) listEpisodes(w http.ResponseWriter, r *http.Request) {
 		s.Error(err, w, r)
 		return
 	}
-
 	s.OK(&entity.ListEpisodesResponse{Episodes: resp.Episodes, Series: resp.Series, Seasons: resp.Seasons}, w, r)
 }
