@@ -15,9 +15,6 @@ func (s *Service) routeSeries(r chi.Router) {
 
 func (s *Service) listSeries(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	ctx, span := startTrace(ctx, r, "http.Service#listSeries")
-	defer span.End()
-
 	req := &usecase.ListSeriesRequest{
 		Limit:  QueryIntDefault(r, "limit", 20),
 		Offset: QueryInt(r, "offset"),

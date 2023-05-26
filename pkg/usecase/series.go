@@ -8,6 +8,7 @@ import (
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/entity"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/repository"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type ListSeriesRequest struct {
@@ -21,8 +22,8 @@ type ListSeriesResponse struct {
 }
 
 func (u *UsecaseImpl) ListSeries(ctx context.Context, req *ListSeriesRequest) (*ListSeriesResponse, error) {
-	ctx, span := tracer.Start(ctx, "usecase.UsecaseImpl#ListSeries")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "usecase.UsecaseImpl#ListSeries")
+	defer seg.Close(nil)
 
 	key := fmt.Sprintf("%v", req)
 	resp := &ListSeriesResponse{}

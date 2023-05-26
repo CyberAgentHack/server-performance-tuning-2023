@@ -8,6 +8,7 @@ import (
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/entity"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/repository"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type ListSeasonsRequest struct {
@@ -21,8 +22,8 @@ type ListSeasonsResponse struct {
 }
 
 func (u *UsecaseImpl) ListSeasons(ctx context.Context, req *ListSeasonsRequest) (*ListSeasonsResponse, error) {
-	ctx, span := tracer.Start(ctx, "usecase.UsecaseImpl#ListSeasons")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "usecase.UsecaseImpl#ListSeasons")
+	defer seg.Close(nil)
 
 	key := fmt.Sprintf("%v", req)
 	resp := &ListSeasonsResponse{}

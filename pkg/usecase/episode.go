@@ -6,6 +6,7 @@ import (
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/entity"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/repository"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type ListEpisodesRequest struct {
@@ -22,8 +23,8 @@ type ListEpisodesResponse struct {
 }
 
 func (u *UsecaseImpl) ListEpisodes(ctx context.Context, req *ListEpisodesRequest) (*ListEpisodesResponse, error) {
-	ctx, span := tracer.Start(ctx, "usecase.UsecaseImpl#ListEpisodes")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "usecase.UsecaseImpl#ListEpisodes")
+	defer seg.Close(nil)
 
 	params := &repository.ListEpisodesParams{
 		Limit:    req.Limit,

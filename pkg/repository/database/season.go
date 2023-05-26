@@ -10,6 +10,7 @@ import (
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/entity"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/repository"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 type Season struct {
@@ -21,8 +22,8 @@ func NewSeason(db *sql.DB) *Season {
 }
 
 func (e *Season) List(ctx context.Context, params *repository.ListSeasonsParams) (entity.Seasons, error) {
-	ctx, span := tracer.Start(ctx, "database.Season#List")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "database.Season#List")
+	defer seg.Close(nil)
 
 	fields := []string{
 		"seasonID",
@@ -87,8 +88,8 @@ func (e *Season) List(ctx context.Context, params *repository.ListSeasonsParams)
 }
 
 func (e *Season) Get(ctx context.Context, id string) (*entity.Season, error) {
-	ctx, span := tracer.Start(ctx, "database.Season#Get")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "database.Season#Get")
+	defer seg.Close(nil)
 
 	fields := []string{
 		"seasonID",
@@ -119,8 +120,8 @@ func (e *Season) Get(ctx context.Context, id string) (*entity.Season, error) {
 }
 
 func (e *Season) BatchGet(ctx context.Context, ids []string) (entity.Seasons, error) {
-	ctx, span := tracer.Start(ctx, "database.Season#BatchGet")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "database.Season#BatchGet")
+	defer seg.Close(nil)
 
 	return nil, errcode.New(errors.New("not implemtented yet"))
 }

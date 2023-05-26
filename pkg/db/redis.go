@@ -7,6 +7,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/aws/aws-xray-sdk-go/xray"
 	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/otel"
 
@@ -35,8 +36,8 @@ func NewRedisClient(endpoint string) (RedisClient, error) {
 }
 
 func (c *redisClient) Get(ctx context.Context, key string, dst any) (bool, error) {
-	ctx, span := tracer.Start(ctx, "db.redisClient#Get")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "db.redisClient#Get")
+	defer seg.Close(nil)
 
 	b, err := c.client.Get(ctx, key).Bytes()
 	if errors.Is(err, redis.Nil) {
@@ -53,8 +54,8 @@ func (c *redisClient) Get(ctx context.Context, key string, dst any) (bool, error
 }
 
 func (c *redisClient) Set(ctx context.Context, key string, v any, ttl time.Duration) error {
-	ctx, span := tracer.Start(ctx, "db.redisClient#Set")
-	defer span.End()
+	ctx, seg := xray.BeginSubsegment(ctx, "db.redisClient#Set")
+	defer seg.Close(nil)
 
 	buf := new(bytes.Buffer)
 	err := gob.NewEncoder(buf).Encode(v)
