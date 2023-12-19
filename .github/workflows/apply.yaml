@@ -9,7 +9,7 @@ on:
 env:
   AWS_REGION: ap-northeast-1
   ZIP_FILE_NAME: wsperf-application.zip
-  ECR_REPOSITORY: caws202402perf
+  ECR_REPOSITORY: cawsperf
   IMAGE_TAG: default
 
 jobs:
