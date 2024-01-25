@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/repository"
 	"github.com/aws/aws-xray-sdk-go/xray"
+	"go.uber.org/multierr"
 )
 
 type Season struct {
@@ -123,5 +123,53 @@ func (e *Season) BatchGet(ctx context.Context, ids []string) (entity.Seasons, er
 	ctx, seg := xray.BeginSubsegment(ctx, "database.Season#BatchGet")
 	defer seg.Close(nil)
 
-	return nil, errcode.New(errors.New("not implemtented yet"))
+	if len(ids) == 0 {
+		return nil, nil
+	}
+
+	newIDs := make([]string, 0, len(ids))
+	for _, id := range ids {
+		if id != "" {
+			newIDs = append(newIDs, id)
+		}
+	}
+
+	fields := []string{
+		"seasonID",
+		"seriesID",
+		"displayName",
+		"imageURL",
+		"displayOrder",
+	}
+
+	query := fmt.Sprintf(
+		"SELECT %s FROM seasons WHERE seasonID IN(?%s)",
+		strings.Join(fields, ","),
+		strings.Repeat(",?", len(newIDs)-1),
+	)
+	rows, err := e.db.QueryContext(ctx, query, newIDs)
+	if err != nil {
+		return nil, errcode.New(err)
+	}
+
+	var seasons entity.Seasons
+	var multiErr error
+	for rows.Next() {
+		var s entity.Season
+		if err = rows.Scan(&s); err != nil {
+			multiErr = multierr.Append(multiErr, err)
+			continue
+		}
+		seasons = append(seasons, &s)
+	}
+
+	if cerr := rows.Close(); cerr != nil {
+		return nil, errcode.New(cerr)
+	}
+
+	if multiErr != nil {
+		return nil, errcode.New(multiErr)
+	}
+
+	return seasons, nil
 }
