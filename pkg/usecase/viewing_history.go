@@ -55,9 +55,15 @@ func (u *UsecaseImpl) BatchGetViewingHistories(ctx context.Context, req *BatchGe
 		return nil, errcode.New(err)
 	}
 
-	viewingHistories, err := u.db.ViewingHistory.BatchGet(ctx, req.EpisodeIDs, req.UserID)
-	if err != nil {
-		return nil, errcode.New(err)
+	viewingHistories := make(entity.ViewingHistories, 0, len(req.EpisodeIDs))
+
+	for _, episodeID := range req.EpisodeIDs {
+		viewingHistory, err := u.db.ViewingHistory.Get(ctx, episodeID, req.UserID)
+		if err != nil {
+			return nil, errcode.New(err)
+		}
+		viewingHistories = append(viewingHistories, viewingHistory)
 	}
+
 	return &BatchGetViewingHistoriesResponse{ViewingHistories: viewingHistories}, nil
 }

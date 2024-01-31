@@ -34,7 +34,7 @@ func TestCreateViewingHistory(t *testing.T) {
 			name: "failed to UpdateViewingHistory",
 			setup: func(m *mocks) {
 				m.uc.EXPECT().CreateViewingHistory(gomock.Any(), &usecase.CreateViewingHistoryRequest{
-					ViewingHistory: &entity.ViewingHistory{ID: viewingHistoryID},
+					ViewingHistory: &entity.ViewingHistory{UserID: viewingHistoryID},
 				}).Return(nil, errcode.NewInternal("error"))
 			},
 			body:         `{"id":"` + viewingHistoryID + `"}`,
@@ -44,13 +44,13 @@ func TestCreateViewingHistory(t *testing.T) {
 			name: "success",
 			setup: func(m *mocks) {
 				m.uc.EXPECT().CreateViewingHistory(gomock.Any(), &usecase.CreateViewingHistoryRequest{
-					ViewingHistory: &entity.ViewingHistory{ID: viewingHistoryID},
+					ViewingHistory: &entity.ViewingHistory{UserID: viewingHistoryID},
 				}).Return(&usecase.CreateViewingHistoryResponse{
-					ViewingHistory: &entity.ViewingHistory{ID: viewingHistoryID},
+					ViewingHistory: &entity.ViewingHistory{UserID: viewingHistoryID},
 				}, nil)
 			},
 			body:         `{"id":"` + viewingHistoryID + `"}`,
-			expected:     &entity.ViewingHistory{ID: viewingHistoryID},
+			expected:     &entity.ViewingHistory{UserID: viewingHistoryID},
 			expectedCode: http.StatusOK,
 		},
 	}
@@ -102,10 +102,10 @@ func TestListViewingHistories(t *testing.T) {
 					UserID:     userID,
 					EpisodeIDs: episodeIDs,
 				}).Return(&usecase.BatchGetViewingHistoriesResponse{
-					ViewingHistories: entity.ViewingHistories{{ID: viewingHistoryID}},
+					ViewingHistories: entity.ViewingHistories{{UserID: viewingHistoryID}},
 				}, nil)
 			},
-			expected:     &entity.ViewingHistories{{ID: viewingHistoryID}},
+			expected:     &entity.ViewingHistories{{UserID: viewingHistoryID}},
 			expectedCode: http.StatusOK,
 		},
 	}

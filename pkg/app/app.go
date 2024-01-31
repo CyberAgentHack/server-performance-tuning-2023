@@ -89,7 +89,7 @@ func (a *App) runWithContext(ctx context.Context) (err error) {
 		Series:         database.NewSeries(mysql),
 		Season:         database.NewSeason(mysql),
 		Genre:          database.NewGenre(mysql),
-		ViewingHistory: database.NewViewingHistory(),
+		ViewingHistory: database.NewViewingHistory(mysql),
 	}
 	uc := usecase.NewUsecase(database, redis)
 
