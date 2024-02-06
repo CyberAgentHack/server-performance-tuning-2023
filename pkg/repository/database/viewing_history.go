@@ -17,13 +17,6 @@ func NewViewingHistory(db *sql.DB) *ViewingHistory {
 	return &ViewingHistory{db: db}
 }
 
-func (e *ViewingHistory) Create(ctx context.Context, viewingHistory *entity.ViewingHistory) (*entity.ViewingHistory, error) {
-	_, seg := xray.BeginSubsegment(ctx, "database.ViewingHistory#Create")
-	defer seg.Close(nil)
-	// TODO
-	return &entity.ViewingHistory{}, nil
-}
-
 func (e *ViewingHistory) Get(ctx context.Context, id string, userID string) (*entity.ViewingHistory, error) {
 	_, seg := xray.BeginSubsegment(ctx, "database.ViewingHistory#Get")
 	defer seg.Close(nil)
