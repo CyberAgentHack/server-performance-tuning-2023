@@ -26,7 +26,6 @@ type Usecase interface {
 
 	ListSeasons(ctx context.Context, req *ListSeasonsRequest) (*ListSeasonsResponse, error)
 
-	CreateViewingHistory(ctx context.Context, req *CreateViewingHistoryRequest) (*CreateViewingHistoryResponse, error)
 	BatchGetViewingHistories(ctx context.Context, req *BatchGetViewingHistoriesRequest) (*BatchGetViewingHistoriesResponse, error)
 }
 
