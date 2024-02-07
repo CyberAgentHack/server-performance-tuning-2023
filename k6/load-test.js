@@ -27,7 +27,7 @@ export const options = {
 
 export function load_test() {
   const seriesURL =  new URL(`${__ENV.API_BASE_URL}/series`);
-  const offset = Math.floor(Math.random() * 2183)
+  const offset = Math.floor(Math.random() * 20)
   seriesURL.searchParams.append(`limit`, `20`);
   seriesURL.searchParams.append(`offset`, `${offset}`);
   
@@ -63,6 +63,7 @@ export function load_test() {
         url.searchParams.append(`limit`, `20`)
         url.searchParams.append(`offset`, `0`)
         url.searchParams.append(`seasonId`, `${season.id}`)
+        url.searchParams.append(`seriesId`, `${season.seriesId}`)
         episodeRequests.push(['GET', url.toString()])
       })
     }
