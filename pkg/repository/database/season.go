@@ -147,7 +147,7 @@ func (e *Season) BatchGet(ctx context.Context, ids []string) (entity.Seasons, er
 		strings.Join(fields, ","),
 		strings.Repeat(",?", len(newIDs)-1),
 	)
-	rows, err := e.db.QueryContext(ctx, query, newIDs)
+	rows, err := e.db.QueryContext(ctx, query, convertStringsToAnys(newIDs)...)
 	if err != nil {
 		return nil, errcode.New(err)
 	}
@@ -155,12 +155,19 @@ func (e *Season) BatchGet(ctx context.Context, ids []string) (entity.Seasons, er
 	var seasons entity.Seasons
 	var multiErr error
 	for rows.Next() {
-		var s entity.Season
-		if err = rows.Scan(&s); err != nil {
+		season := &entity.Season{}
+		err = rows.Scan(
+			&season.ID,
+			&season.SeriesID,
+			&season.DisplayName,
+			&season.ImageURL,
+			&season.DisplayOrder,
+		)
+		if err != nil {
 			multiErr = multierr.Append(multiErr, err)
 			continue
 		}
-		seasons = append(seasons, &s)
+		seasons = append(seasons, season)
 	}
 
 	if cerr := rows.Close(); cerr != nil {
