@@ -15,8 +15,8 @@ export const options = {
 
           preAllocatedVUs: 20,
           stages: [
-              { target: 1, duration: '1s' },
-              { target: 1, duration: '1s' },
+              { target: 5, duration: '5s' },
+              { target: 5, duration: '30s' },
           ],
       },
   },
@@ -85,21 +85,18 @@ export function fetchEpisodes (offset, limit) {
 }
 
 export function setup() {
-  // const offsets = [0, 50, 100, 150, 200];
   const offsets = [0];
   let episodes = [];
 
   offsets.forEach((offset) => {
     episodes = episodes.concat(fetchEpisodes(offset, 50));
   })
-  console.log(episodes.length);
   return { episodes: episodes };
 }
 
 export function load_test(data) {
   const episodes = data.episodes;
   
-  console.log(episodes[0]);
   userIDs.forEach((userID) => {
     const viewingHistoryRequests = Array();
     const episodeIDs = Array();
@@ -130,4 +127,3 @@ function check_status_ok(res) {
     fail(`status is not 200. response: ${JSON.stringify(res)}`);
   }
 }
-
