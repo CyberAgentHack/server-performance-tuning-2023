@@ -113,24 +113,34 @@ func (e *Series) BatchGet(ctx context.Context, ids []string) (entity.SeriesMulti
 		}
 	}
 
-	fields := []string{"id", "displayName", "description", "imageUrl", "genreId"}
+	fields := []string{"seriesID", "displayName", "description", "imageURL", "genreID"}
 	query := fmt.Sprintf(
 		"SELECT %s FROM series WHERE seriesID IN(?%s)",
 		strings.Join(fields, ", "),
 		strings.Repeat(",?", len(newIDs)-1),
 	)
 
-	rows, err := e.db.QueryContext(ctx, query, newIDs)
+	rows, err := e.db.QueryContext(ctx, query, convertStringsToAnys(newIDs)...)
+	if err != nil {
+		return nil, errcode.New(err)
+	}
 
 	var seriesMulti entity.SeriesMulti
 	var multiErr error
 	for rows.Next() {
-		var series entity.Series
-		if err := rows.Scan(&series); err != nil {
+		series := &entity.Series{}
+		err = rows.Scan(
+			&series.ID,
+			&series.DisplayName,
+			&series.Description,
+			&series.ImageURL,
+			&series.GenreID,
+		)
+		if err != nil {
 			multiErr = multierr.Append(multiErr, err)
 			continue
 		}
-		seriesMulti = append(seriesMulti, &series)
+		seriesMulti = append(seriesMulti, series)
 	}
 
 	if err := rows.Close(); err != nil {
