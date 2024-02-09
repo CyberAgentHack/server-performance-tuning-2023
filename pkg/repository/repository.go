@@ -54,7 +54,6 @@ type ListSeasonsParams struct {
 }
 
 type ViewingHistory interface {
-	Create(ctx context.Context, viewingHistory *entity.ViewingHistory) (*entity.ViewingHistory, error)
 	Get(ctx context.Context, id string, userID string) (*entity.ViewingHistory, error)
 	BatchGet(ctx context.Context, ids []string, userID string) (entity.ViewingHistories, error)
 }
