@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/entity"
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/errcode"
@@ -38,7 +39,8 @@ func (e *ViewingHistory) Get(ctx context.Context, id string, userID string) (*en
 		&viewingHistory.Duration,
 		&viewingHistory.LastViewingAt,
 	)
-	if err != nil {
+
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, errcode.New(err)
 	}
 
