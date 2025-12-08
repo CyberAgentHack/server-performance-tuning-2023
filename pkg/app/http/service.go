@@ -33,7 +33,7 @@ func (s *Service) Register(mux *chi.Mux) {
 func (s *Service) newRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Use(func(h http.Handler) http.Handler {
-		return xray.Handler(xray.NewFixedSegmentNamer("wsperf"), h)
+		return xray.Handler(xray.NewFixedSegmentNamer("suna-big"), h)
 	})
 	r.Get("/", livenessCheck)
 	r.Route("/series", s.routeSeries)
