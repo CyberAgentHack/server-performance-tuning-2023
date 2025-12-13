@@ -28,7 +28,7 @@ func NewConfig(env string, dbSecretName string, redisEndpoint string) (*Config, 
 				EnableTracing: true,
 			},
 		}
-	case "cloud9":
+	case "ec2":
 		cfg = &Config{
 			DBConfig: &config.DBConfig{
 				SecretsManagerDBConfig: &config.SecretsManagerDBConfig{
@@ -36,22 +36,6 @@ func NewConfig(env string, dbSecretName string, redisEndpoint string) (*Config, 
 				},
 			},
 			RedisEndpoint: redisEndpoint,
-			TraceConfig: &TraceConfig{
-				EnableTracing: false,
-			},
-		}
-	case "local":
-		cfg = &Config{
-			DBConfig: &config.DBConfig{
-				RawDBConfig: &config.RawDBConfig{
-					Username: "root",
-					Password: "",
-					Host:     "localhost",
-					Port:     3306,
-					DB:       "wsperf",
-				},
-			},
-			RedisEndpoint: "localhost:6379",
 			TraceConfig: &TraceConfig{
 				EnableTracing: false,
 			},

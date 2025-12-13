@@ -1,7 +1,7 @@
 # server-performance-tuning-2023
 
-## Cloud9で実行する場合
+## 実行方法
 ```shell
 $ make setup
-$ make run-cloud9
+$ make run
 ```
