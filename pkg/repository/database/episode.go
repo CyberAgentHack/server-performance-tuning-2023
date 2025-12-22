@@ -44,7 +44,7 @@ func (e *Episode) List(ctx context.Context, params *repository.ListEpisodesParam
 	}
 	if params.SeriesID != "" {
 		clauses = append(clauses, "seriesID = ?")
-		args = append(args, params.SeasonID)
+		args = append(args, params.SeriesID)
 	}
 
 	var whereClause string
