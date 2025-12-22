@@ -13,12 +13,12 @@ export const options = {
 
           gracefulStop: '10s',
 
-          preAllocatedVUs: 20,
+          preAllocatedVUs: 50,  // 20 → 50 に増やして同時接続数を上げる
           stages: [
               // target: 1 秒あたりの load_test 関数の実行回数の目標値
               // duration: target 到達までにかかる時間
-              { target: 5, duration: '1m' }, // 1分かけてload_test関数の実行回数を5まで大きくする
-              { target: 5, duration: '1m' }, // 1秒あたりの実行回数5回を1分間維持する 
+              { target: 20, duration: '1m' }, // 5 → 20 に増やして負荷を上げる
+              { target: 20, duration: '1m' }, // 1秒あたりの実行回数20回を1分間維持する
           ],
       },
   },
@@ -27,7 +27,7 @@ export const options = {
 
 export function load_test() {
   const seriesURL =  new URL(`${__ENV.API_BASE_URL}/series`);
-  const offset = Math.floor(Math.random() * 20)
+  const offset = Math.floor(Math.random() * 100)  // 0-99 に拡大（2,000 series にアクセス）
   seriesURL.searchParams.append(`limit`, `20`);
   seriesURL.searchParams.append(`offset`, `${offset}`);
   
@@ -60,7 +60,7 @@ export function load_test() {
       }
       body.seasons.forEach((season) => {
         const url = new URL(`${__ENV.API_BASE_URL}/episodes`);
-        url.searchParams.append(`limit`, `20`)
+        url.searchParams.append(`limit`, `100`)  // 20 → 100 に増やして N+1 問題を顕在化
         url.searchParams.append(`offset`, `0`)
         url.searchParams.append(`seasonId`, `${season.id}`)
         url.searchParams.append(`seriesId`, `${season.seriesId}`)
