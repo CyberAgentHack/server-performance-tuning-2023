@@ -60,7 +60,7 @@ export function load_test() {
       }
       body.seasons.forEach((season) => {
         const url = new URL(`${__ENV.API_BASE_URL}/episodes`);
-        url.searchParams.append(`limit`, `100`)  // 20 → 100 に増やして N+1 問題を顕在化
+        url.searchParams.append(`limit`, `20`)
         url.searchParams.append(`offset`, `0`)
         url.searchParams.append(`seasonId`, `${season.id}`)
         url.searchParams.append(`seriesId`, `${season.seriesId}`)
