@@ -3,5 +3,5 @@
 ## 実行方法
 ```shell
 $ make setup
-$ make run
+$ make run-local
 ```

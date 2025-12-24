@@ -31,11 +31,15 @@ func NewConfig(env string, dbSecretName string, redisEndpoint string) (*Config, 
 	case "local":
 		cfg = &Config{
 			DBConfig: &config.DBConfig{
-				SecretsManagerDBConfig: &config.SecretsManagerDBConfig{
-					SecretID: dbSecretName,
+				RawDBConfig: &config.RawDBConfig{
+					Username: "root",
+					Password: "",
+					Host:     "localhost",
+					Port:     3306,
+					DB:       "wsperf",
 				},
 			},
-			RedisEndpoint: redisEndpoint,
+			RedisEndpoint: "localhost:6379",
 			TraceConfig: &TraceConfig{
 				EnableTracing: false,
 			},
