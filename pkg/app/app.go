@@ -22,7 +22,7 @@ import (
 type App struct {
 	logger        *zap.Logger
 	Level         string `default:"debug"`
-	Environment   string `default:"ec2"`
+	Environment   string `default:"local"`
 	Port          int    `default:"8080"`
 	DbSecretName  string
 	RedisEndpoint string
