@@ -6,7 +6,7 @@ test:
 
 .PHONY: run
 run:
-	@ENV_ENVIRONMENT=ec2 go run main.go
+	@ENV_ENVIRONMENT=local go run main.go
 
 .PHONY: generate
 generate:
