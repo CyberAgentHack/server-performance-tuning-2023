@@ -28,7 +28,7 @@ func NewConfig(env string, dbSecretName string, redisEndpoint string) (*Config, 
 				EnableTracing: true,
 			},
 		}
-	case "ec2":
+	case "local":
 		cfg = &Config{
 			DBConfig: &config.DBConfig{
 				SecretsManagerDBConfig: &config.SecretsManagerDBConfig{
