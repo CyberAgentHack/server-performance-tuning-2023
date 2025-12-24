@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-xray-sdk-go/xray"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
 
 	"github.com/CyberAgentHack/server-performance-tuning-2023/pkg/usecase"
@@ -28,12 +29,14 @@ func NewService(usecase usecase.Usecase, logger *zap.Logger) *Service {
 
 func (s *Service) Register(mux *chi.Mux) {
 	mux.Mount("/", s.newRouter())
+	// pprof
+	mux.Mount("/debug", middleware.Profiler())
 }
 
 func (s *Service) newRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Use(func(h http.Handler) http.Handler {
-		return xray.Handler(xray.NewFixedSegmentNamer("wsperf"), h)
+		return xray.Handler(xray.NewFixedSegmentNamer("suna-big"), h)
 	})
 	r.Get("/", livenessCheck)
 	r.Route("/series", s.routeSeries)

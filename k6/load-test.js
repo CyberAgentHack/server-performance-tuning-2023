@@ -13,12 +13,12 @@ export const options = {
 
           gracefulStop: '10s',
 
-          preAllocatedVUs: 50,  // 20 → 50 に増やして同時接続数を上げる
+          preAllocatedVUs: 50,
           stages: [
               // target: 1 秒あたりの load_test 関数の実行回数の目標値
               // duration: target 到達までにかかる時間
-              { target: 20, duration: '1m' }, // 5 → 20 に増やして負荷を上げる
-              { target: 20, duration: '1m' }, // 1秒あたりの実行回数20回を1分間維持する
+              { target: 20, duration: '1m' }, // 1分かけて target 20 に到達
+              { target: 20, duration: '1m' }, // target 20 を1分間維持
           ],
       },
   },
@@ -27,7 +27,7 @@ export const options = {
 
 export function load_test() {
   const seriesURL =  new URL(`${__ENV.API_BASE_URL}/series`);
-  const offset = Math.floor(Math.random() * 100)  // 0-99 に拡大（2,000 series にアクセス）
+  const offset = Math.floor(Math.random() * 100)
   seriesURL.searchParams.append(`limit`, `20`);
   seriesURL.searchParams.append(`offset`, `${offset}`);
   
